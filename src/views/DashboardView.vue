@@ -171,10 +171,7 @@ function openCountry() {
   }
   if (countryBtn.value) {
     const rect = countryBtn.value.getBoundingClientRect()
-    countryPos.value = {
-      top: rect.bottom + 8,
-      right: Math.max(8, window.innerWidth - rect.right),
-    }
+    countryPos.value = { top: rect.bottom + 8, right: 8 }
   }
   countryOpen.value = true
 }
@@ -229,12 +226,15 @@ onMounted(() => document.addEventListener('click', onDocClick))
               <div class="text-[10px] uppercase tracking-wide text-slate-400 mb-1.5 px-1">
                 {{ t('header.home') }}
               </div>
-              <div class="grid grid-cols-5 gap-1.5 w-56 max-w-full">
+              <div
+                class="grid gap-1.5"
+                style="grid-template-columns: repeat(5, minmax(0, 1fr)); width: min(14rem, calc(100vw - 32px));"
+              >
                 <button
                   v-for="c in HOME_COUNTRIES"
                   :key="c.code"
                   @click="pickCountry(c.code)"
-                  class="w-9 h-9 rounded-full flex items-center justify-center text-xl transition-all border-2"
+                  class="w-full aspect-square rounded-full flex items-center justify-center text-xl transition-all border-2"
                   :class="
                     home.code === c.code
                       ? 'border-slate-900 dark:border-white bg-slate-100 dark:bg-slate-700 scale-110 shadow-md'
