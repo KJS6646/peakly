@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=/peakly/" />
+    <title>Peakly</title>
+  </head>
+  <body>
+    <script>
+      // GitHub Pages SPA fallback — 잘못된 경로로 접근 시 루트로 리다이렉트
+      location.replace(
+        '/peakly/' +
+          (location.pathname.replace(/^\/peakly\//, '') || '') +
+          location.search +
+          location.hash,
+      )
+    </script>
+  </body>
+</html>
