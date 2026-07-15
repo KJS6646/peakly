@@ -1,0 +1,36 @@
+WHAT: Peakly 프로젝트 초기화 + MVP 대시보드 (환율 그래프 + 여행지 순위)
+WHY : "언제 어디로 신혼여행 가야 좋은지"를 한눈에 보는 대시보드. 개인 pain point에서 출발한 사이드 프로젝트. 청첩장 코드베이스와 분리해 새 프로젝트로 시작.
+STACK:
+- Vue 3 + TypeScript + Vite
+- Tailwind CSS v4 (@tailwindcss/vite)
+- vue-router, pinia, axios
+- vue3-apexcharts (스파크라인)
+- 백엔드 없음. 정적 사이트 + 외부 무료 API만 사용
+DATA SOURCES:
+- open.er-api.com/v6/latest/KRW — 현재 환율 (키 없음, 모든 주요 통화)
+- api.frankfurter.app — 시계열 (ECB, 키 없음, 14개 통화 지원)
+- 도시별 월별 기후 데이터는 정적 하드코딩 (Wikipedia climate normals + 여행 통념 기반 근사값)
+FILES:
+- src/data/cities.ts — 30개 인기 여행 도시 (한국 여행객 관점): 일본 4/태국 3/베트남 3/필리핀 2/유럽 7/오세아니아 4/아메리카 4 등
+- src/data/climate.ts — 각 도시 x 12개월 (avgTemp, rainfall, score) + scoreToColor 헬퍼
+- src/api/currencies.ts — fetchCurrentRates(KRW 기준), fetchTimeseries(EUR 경유 계산)
+- src/lib/dealScore.ts — currencyFavorScore + weatherScore 가중 합산 (날씨 60%, 환율 40%)
+- src/components/CurrencyCard.vue — 통화 하나 카드: 국기 + 100단위 원화 + 스파크라인 + 6개월 변화율
+- src/components/CityRow.vue — 도시 순위 행: 순위 + 국기 + 이름 + 날씨 배지 + 환율 변화 + Deal Score
+- src/views/DashboardView.vue — 상단 년월 셀렉트, 좌 5칸 환율 그래프 8개, 우 7칸 도시 순위 리스트 (Deal Score 정렬)
+- src/router/index.ts — 단일 라우트 '/' → DashboardView
+- src/main.ts — Pinia + Router + VueApexCharts 플러그인 등록
+- src/style.css — Tailwind 4 @import만
+- vite.config.ts — tailwind 플러그인, @→src 별칭, 포트 5174
+- tsconfig.app.json — paths @/*→./src/*
+- src/shims.d.ts — vue3-apexcharts 타입 declare
+UX:
+- 색상 언어: 도시 행 배경 = 해당 월 여행 적합도 (에메랄드=최적 → 회색=피해야)
+- 환율 색상: 파랑=원화 강세(여행자 유리), 빨강=원화 약세
+- Deal Score: 0-100 점수 카드로 표시, 자동 정렬
+NEXT:
+- 도메인 확보 (peakly.io / peakly.co / peakly.travel 등 whois 조회 필요)
+- 배포: Vercel 정적 호스팅 (무료)
+- v0.2: 개별 도시 상세 페이지 (12개월 스코어 히트맵, 대표 사진, 항공권 링크)
+- v0.3: 관심 도시 등록 + 알림 (백엔드 최초 필요)
+- 수익화: 스카이스캐너/아고다 어필리에이트 (트래픽 확보 후)
