@@ -161,11 +161,37 @@ function toggleLocale() {
 
 // ---- 국가 선택 드롭다운 ----
 const countryOpen = ref(false)
+const countryBtn = ref<HTMLElement | null>(null)
+const countryPos = ref({ top: 0, right: 0 })
+
+function openCountry() {
+  if (countryOpen.value) {
+    countryOpen.value = false
+    return
+  }
+  if (countryBtn.value) {
+    const rect = countryBtn.value.getBoundingClientRect()
+    countryPos.value = {
+      top: rect.bottom + 8,
+      right: Math.max(8, window.innerWidth - rect.right),
+    }
+  }
+  countryOpen.value = true
+}
+
 function pickCountry(code: string) {
   const c = HOME_COUNTRIES.find((h) => h.code === code)
   if (c) setHome(c)
   countryOpen.value = false
 }
+
+function onDocClick(e: MouseEvent) {
+  if (!countryOpen.value) return
+  const target = e.target as Node
+  if (countryBtn.value?.contains(target)) return
+  countryOpen.value = false
+}
+onMounted(() => document.addEventListener('click', onDocClick))
 </script>
 
 <template>
@@ -180,23 +206,30 @@ function pickCountry(code: string) {
         </div>
         <div class="flex items-center gap-2">
           <!-- 국가 선택 -->
-          <div class="relative">
-            <button
-              @click="countryOpen = !countryOpen"
-              class="flex items-center gap-1.5 px-2 py-1 rounded-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-              :title="t('header.home')"
-            >
-              <span class="text-lg leading-none">{{ home.emoji }}</span>
-              <span class="text-xs font-medium">{{ home.code }}</span>
-            </button>
+          <button
+            ref="countryBtn"
+            @click.stop="openCountry"
+            class="flex items-center gap-1.5 px-2 py-1 rounded-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            :title="t('header.home')"
+          >
+            <span class="text-lg leading-none">{{ home.emoji }}</span>
+            <span class="text-xs font-medium">{{ home.code }}</span>
+          </button>
+          <Teleport to="body">
             <div
               v-if="countryOpen"
-              class="absolute right-0 top-full mt-2 z-40 p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl"
+              class="fixed z-50 p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl"
+              :style="{
+                top: countryPos.top + 'px',
+                right: countryPos.right + 'px',
+                maxWidth: 'calc(100vw - 16px)',
+              }"
+              @click.stop
             >
               <div class="text-[10px] uppercase tracking-wide text-slate-400 mb-1.5 px-1">
                 {{ t('header.home') }}
               </div>
-              <div class="grid grid-cols-5 gap-1.5 w-56">
+              <div class="grid grid-cols-5 gap-1.5 w-56 max-w-full">
                 <button
                   v-for="c in HOME_COUNTRIES"
                   :key="c.code"
@@ -213,7 +246,7 @@ function pickCountry(code: string) {
                 </button>
               </div>
             </div>
-          </div>
+          </Teleport>
 
           <!-- 타임머신 -->
           <button
